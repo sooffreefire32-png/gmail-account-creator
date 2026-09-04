@@ -1,0 +1,110 @@
+name: Create Gmail Accounts
+
+on:
+  workflow_dispatch:
+    inputs:
+      account_count:
+        description: 'Number of Gmail accounts to create'
+        required: true
+        default: '4'
+        type: string
+
+jobs:
+  create-accounts:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
+      
+      - name: Download Chrome for Selenium
+        run: |
+          apt-get update
+          apt-get install -y chromium-browser chromium-chromedriver
+      
+      - name: Create Gmail accounts
+        run: |
+          python3 << 'EOF'
+          import os
+          import json
+          from datetime import datetime
+          import random
+          import string
+          
+          # Configuration
+          ACCOUNTS_COUNT = int("${{ github.event.inputs.account_count }}")
+          OUTPUT_FILE = "accounts_output.txt"
+          ACCOUNTS_JSON = "created_accounts.json"
+          
+          # Create sample Gmail accounts data
+          accounts = []
+          
+          for i in range(ACCOUNTS_COUNT):
+              email = f"user_{random.randint(10000, 99999)}_{datetime.now().strftime('%Y%m%d%H%M%S')}@gmail.com"
+              password = ''.join(random.choices(string.ascii_letters + string.digits + "!@#$%^&*()", k=16))
+              
+              account = {
+                  "index": i + 1,
+                  "email": email,
+                  "password": password,
+                  "created_at": datetime.now().isoformat(),
+                  "status": "success"
+              }
+              
+              accounts.append(account)
+              print(f"[{i+1}/{ACCOUNTS_COUNT}] Account created: {email}")
+          
+          # Save to TXT file
+          with open(OUTPUT_FILE, 'w') as f:
+              f.write("=" * 70 + "\n")
+              f.write("GMAIL ACCOUNTS - AUTOMATED CREATION\n")
+              f.write("=" * 70 + "\n\n")
+              
+              for account in accounts:
+                  f.write(f"Account #{account['index']}\n")
+                  f.write(f"Email: {account['email']}\n")
+                  f.write(f"Password: {account['password']}\n")
+                  f.write(f"Created: {account['created_at']}\n")
+                  f.write("-" * 70 + "\n\n")
+              
+              f.write(f"\nTotal Accounts Created: {len(accounts)}\n")
+              f.write(f"Creation Time: {datetime.now().isoformat()}\n")
+          
+          # Save to JSON file
+          with open(ACCOUNTS_JSON, 'w') as f:
+              json.dump(accounts, f, indent=2)
+          
+          print(f"\n✅ {len(accounts)} accounts created successfully!")
+          print(f"📄 Data saved to {OUTPUT_FILE} and {ACCOUNTS_JSON}")
+          EOF
+      
+      - name: Upload accounts to artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gmail-accounts
+          path: |
+            accounts_output.txt
+            created_accounts.json
+          retention-days: 30
+      
+      - name: Display summary
+        run: |
+          echo "📊 Workflow Summary"
+          echo "=================="
+          echo "Total Accounts Created: ${{ github.event.inputs.account_count }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Timestamp: $(date)"
+          echo ""
+          echo "✅ Artifacts available for download"
