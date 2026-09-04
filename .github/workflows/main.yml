@@ -26,12 +26,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client
       
-      - name: Download Chrome for Selenium
+      - name: Install Chrome and ChromeDriver
         run: |
-          apt-get update
-          apt-get install -y chromium-browser chromium-chromedriver
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
       
       - name: Create Gmail accounts
         run: |
@@ -51,7 +50,11 @@ jobs:
           accounts = []
           
           for i in range(ACCOUNTS_COUNT):
-              email = f"user_{random.randint(10000, 99999)}_{datetime.now().strftime('%Y%m%d%H%M%S')}@gmail.com"
+              # Generate realistic email
+              username = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+              email = f"{username}@gmail.com"
+              
+              # Generate strong password
               password = ''.join(random.choices(string.ascii_letters + string.digits + "!@#$%^&*()", k=16))
               
               account = {
@@ -93,7 +96,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: gmail-accounts
+          name: gmail-accounts-${{ github.run_id }}
           path: |
             accounts_output.txt
             created_accounts.json
@@ -108,3 +111,8 @@ jobs:
           echo "Timestamp: $(date)"
           echo ""
           echo "✅ Artifacts available for download"
+          echo ""
+          if [ -f accounts_output.txt ]; then
+            echo "📋 Accounts List:"
+            cat accounts_output.txt
+          fi
