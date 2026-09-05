@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+"""
 Gmail Account Creator Pro - Real Account Creation Tool
 Creates actual Gmail accounts using Selenium automation
 """
@@ -317,10 +319,10 @@ class GmailCreator:
     
     def create_multiple_accounts(self, count=1):
         """Create multiple Gmail accounts"""
-        print(f"\n{Colors.HEADER}{Colors.BOLD}╔════════════════════════════════════════╗{Colors.ENDC}")
+        print(f"\n{Colors.HEADER}{Colors.BOLD}╔════════════════════════════════════════════╗{Colors.ENDC}")
         print(f"{Colors.HEADER}{Colors.BOLD}║   🚀 REAL GMAIL ACCOUNT CREATOR 🚀    ║{Colors.ENDC}")
         print(f"{Colors.HEADER}{Colors.BOLD}║   Creating {count} Actual Gmail Accounts   ║{Colors.ENDC}")
-        print(f"{Colors.HEADER}{Colors.BOLD}╚════════════════════════════════════════╝{Colors.ENDC}\n")
+        print(f"{Colors.HEADER}{Colors.BOLD}╚════════════════════════════════════════════╝{Colors.ENDC}\n")
         
         for i in range(1, count + 1):
             if not self.init_driver():
@@ -359,21 +361,22 @@ class GmailCreator:
     
     def print_summary(self):
         """Print summary statistics"""
-        print(f"\n{Colors.HEADER}{Colors.BOLD}╔════════════════════════════════════════╗{Colors.ENDC}")
+        print(f"\n{Colors.HEADER}{Colors.BOLD}╔════════════════════════════════════════════╗{Colors.ENDC}")
         print(f"{Colors.HEADER}{Colors.BOLD}║        ✅ CREATION SUMMARY ✅          ║{Colors.ENDC}")
-        print(f"{Colors.HEADER}{Colors.BOLD}╚════════════════════════════════════════╝{Colors.ENDC}")
+        print(f"{Colors.HEADER}{Colors.BOLD}╚════════════════════════════════════════════╝{Colors.ENDC}")
         print(f"{Colors.OKGREEN}✓ Successful: {self.success_count}{Colors.ENDC}")
         print(f"{Colors.FAIL}✗ Failed: {self.failure_count}{Colors.ENDC}")
         print(f"{Colors.OKBLUE}→ Total Created: {len(self.accounts)}{Colors.ENDC}")
         
         if self.accounts:
             print(f"\n{Colors.BOLD}📧 Created Accounts:{Colors.ENDC}")
-            print(f"{Colors.HEADER}{'-'*40}{Colors.ENDC}")
+            print(f"{Colors.HEADER}{'='*50}{Colors.ENDC}")
             for account in self.accounts:
                 print(f"Email:    {Colors.OKGREEN}{account['email']}{Colors.ENDC}")
                 print(f"Password: {Colors.OKGREEN}{account['password']}{Colors.ENDC}")
                 print(f"Name:     {Colors.OKBLUE}{account['full_name']}{Colors.ENDC}")
-                print(f"{Colors.HEADER}{'-'*40}{Colors.ENDC}")
+                print(f"Created:  {Colors.OKBLUE}{account['created_at']}{Colors.ENDC}")
+                print(f"{Colors.HEADER}{'='*50}{Colors.ENDC}")
 
 def main():
     """Main entry point"""
